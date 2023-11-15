@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: |
+        # Replace with your build commands
+        echo "Building the source code"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run Tests
+      run: |
+        # Replace with your test commands
+        echo "Running unit tests and code quality checks"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy to Staging
+      run: |
+        # Replace with your deployment commands
+        echo "Deploying to staging environment"
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: [build, test, deploy]
+    if: failure()
+
+    steps:
+    - name: Send failure notification
+      uses: appleboy/telegram-action@v1
+      with:
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        message: "Build or deployment failed for the project."
